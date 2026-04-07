@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Student Project Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="logo">
+            <h1>Student Project Hub</h1>
+        </div>
+        <div class="search-bar">
+            <button id="searchDropdownBtn" class="search-dropdown-btn">Quick Navigation</button>
+            <div id="searchDropdown" class="search-dropdown-menu">
+                <a href="meetings.html" class="dropdown-item">
+                    <span class="dropdown-icon">📅</span>
+                    <span class="dropdown-text">Go to My Meetings</span>
+                </a>
+                <a href="calendar.html" class="dropdown-item">
+                    <span class="dropdown-icon">🗓️</span>
+                    <span class="dropdown-text">My Calendar</span>
+                </a>
+                <a href="projects.html" class="dropdown-item">
+                    <span class="dropdown-icon">📁</span>
+                    <span class="dropdown-text">My Projects</span>
+                </a>
+                <button id="projectOverviewBtn" class="dropdown-item">
+                    <span class="dropdown-icon">📊</span>
+                    <span class="dropdown-text">My Project Overview</span>
+                </button>
+                <button id="upcomingMeetingsBtn" class="dropdown-item">
+                    <span class="dropdown-icon">👥</span>
+                    <span class="dropdown-text">Upcoming Meetings</span>
+                </button>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <div class="notifications" id="notificationsContainer">
+                <span class="notification-icon">🔔</span>
+                <span class="notification-badge" id="notificationCount">0</span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-dropdown-header">
+                        <h3>Notifications</h3>
+                        <button class="notification-close">✕</button>
+                    </div>
+                    <div class="notification-list" id="notificationList">
+                        <p class="empty-notification">No notifications</p>
+                    </div>
+                </div>
+            </div>
+            <div class="student-profile" id="studentProfileBtn" style="cursor: pointer;">
+                <div class="avatar" id="studentAvatar"></div>
+                <div class="student-info">
+                    <h4 id="studentName"></h4>
+                    <p id="studentCourse"></p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="side-nav">
+            <nav>
+                <a href="dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="projects.html" class="nav-item">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">Projects</span>
+                </a>
+                <a href="meetings.html" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">Meetings</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <span class="nav-icon">🗓️</span>
+                    <span class="nav-text">Calendar</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <section class="welcome-section">
+                <h2>Hey, <span id="greetingName"></span></h2>
+                <p>Here's what's happening with your projects today</p>
+            </section>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Total Projects</h3>
+                        <span class="stat-icon">📚</span>
+                    </div>
+                    <div class="stat-number" id="totalProjects">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Ongoing Tasks</h3>
+                        <span class="stat-icon">✅</span>
+                    </div>
+                    <div class="stat-number" id="ongoingTasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Upcoming Meetings</h3>
+                        <span class="stat-icon">👥</span>
+                    </div>
+                    <div class="stat-number" id="upcomingMeetings">0</div>
+                </div>
+            </div>
+
+            <section class="section-card">
+                <div class="section-header">
+                    <h3>My Tasks</h3>
+                    <div class="task-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="today">Today</button>
+                        <button class="filter-btn" data-filter="tomorrow">Tomorrow</button>
+                    </div>
+                    <button id="addTaskBtn" class="primary-btn">+ Add New Task</button>
+                </div>
+                <div class="table-container">
+                    <table class="tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Task Name</th>
+                                <th>Project</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-state">Loading tasks...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="two-column-layout">
+                <section class="section-card">
+                    <div class="section-header">
+                        <h3>Project Overview</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="projectChart" style="width: 100% !important; height: 100% !important; display: block;"></canvas>
+                    </div>
+                    <div class="chart-legend" id="chartLegend"></div>
+                </section>
+
+                <section class="section-card">
+                    <div class="section-header">
+                        <h3>Upcoming Meetings</h3>
+                        <a href="meetings.html" class="view-all-link">View All →</a>
+                    </div>
+                    <div class="table-container">
+                        <table class="meetings-table">
+                            <thead>
+                                <tr>
+                                    <th>Meeting Name</th>
+                                    <th>Date & Time</th>
+                                    <th>Host</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentMeetingsBody">
+                                <tr>
+                                    <td colspan="4" class="empty-state">Loading meetings...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 2rem; border: 3px solid black; box-shadow: 8px 8px 0px black; width: 450px; border-radius: 8px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Edit Your Profile</h2>
+                <span class="close-profile-modal" style="cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">First Name *</label>
+                    <input type="text" id="editFirstName" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Last Name *</label>
+                    <input type="text" id="editLastName" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Course *</label>
+                    <input type="text" id="editCourse" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">
+                </div>
+                
+                <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="save-btn" style="flex: 1; padding: 10px; background: #b0f7b6; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">Save Changes</button>
+                    <button type="button" class="cancel-profile-btn" style="flex: 1; padding: 10px; background: #ffe0b5; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">Cancel</button>
+                </div>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 2px solid #ddd;">
+                
+                <div style="margin-top: 15px;">
+                    <button type="button" id="deleteAccountBtn" style="width: 100%; padding: 12px; background: #ff6b6b; color: white; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace; font-size: 14px;">🗑️ Delete Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete Account Confirmation Modal -->
+    <div id="deleteAccountModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 2rem; border: 3px solid black; box-shadow: 8px 8px 0px black; width: 500px; border-radius: 8px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #ff6b6b;">⚠️ Delete Account</h2>
+                <span class="close-delete-modal" style="cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 15px; border: 2px solid #ffc107; border-radius: 4px; margin-bottom: 20px;">
+                <p style="margin: 0; font-weight: bold; color: #d39e00;">⚠️ This action cannot be undone!</p>
+                <p style="margin: 10px 0 0 0; color: #666;">Your account and all associated projects, meetings, and tasks will be permanently deleted.</p>
+            </div>
+            
+            <form id="deleteAccountForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Enter your password to confirm *</label>
+                    <input type="password" id="deletePassword" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;" placeholder="Your password">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666; cursor: pointer;">
+                        <input type="checkbox" id="deleteConfirmCheckbox" style="width: 18px; height: 18px; cursor: pointer;"> I understand this will permanently delete my account and all my data
+                    </label>
+                </div>
+                
+                <div class="modal-actions" style="display: flex; gap: 10px;">
+                    <button type="submit" id="confirmDeleteBtn" disabled style="flex: 1; padding: 12px; background: #ff6b6b; color: white; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace; opacity: 0.5;">Delete Permanently</button>
+                    <button type="button" class="cancel-delete-btn" style="flex: 1; padding: 12px; background: #ffe0b5; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 20px; border: 3px solid black; box-shadow: 8px 8px 0px black; width: 400px; border-radius: 8px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="taskModalTitle" style="margin: 0;">Add New Task</h2>
+                <span class="close-task-modal" style="cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Task Name *</label>
+                    <input type="text" id="taskName" required style="width: 100%; padding: 8px; border: 2px solid black;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Select Project *</label>
+                    <select id="taskProjectId" required style="width: 100%; padding: 8px; border: 2px solid black; background: white; cursor: pointer;">
+                        <option value="">Loading projects...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Due Date *</label>
+                    <input type="date" id="taskDueDate" required style="width: 100%; padding: 8px; border: 2px solid black;">
+                </div>
+                
+                <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="save-btn" style="flex: 1; padding: 10px; background: #b0f7b6; font-weight: bold; cursor: pointer; border: 2px solid black;">Save Task</button>
+                    <button type="button" class="cancel-task-btn" style="flex: 1; padding: 10px; background: #ffe0b5; font-weight: bold; cursor: pointer; border: 2px solid black;">Cancel</button>
+                    <button type="button" id="deleteTaskBtn" style="display: none; flex: 1; padding: 10px; background: #ff4d4d; color: white; font-weight: bold; cursor: pointer; border: 2px solid black;">Delete Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

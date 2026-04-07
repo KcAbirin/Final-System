@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Meetings - Student Project Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="logo">
+            <h1>Student Project Hub</h1>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" id="globalSearch" placeholder="Search projects, meetings, or advisers...">
+        </div>
+        
+        <div class="nav-actions">
+            <div class="notifications" id="notificationsContainer">
+                <span class="notification-icon">🔔</span>
+                <span class="notification-badge" id="notificationCount">0</span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-dropdown-header">
+                        <h3>Notifications</h3>
+                        <button class="notification-close">✕</button>
+                    </div>
+                    <div class="notification-list" id="notificationList">
+                        <p class="empty-notification">No notifications</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="student-profile" id="studentProfileBtn" style="cursor: pointer;">
+                <div class="avatar" id="studentAvatar"></div>
+                <div class="student-info">
+                    <h4 id="studentName"></h4>
+                    <p id="studentCourse"></p>
+                </div>
+            </div>
+            
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </header>
+    
+    <div class="main-layout">
+        <aside class="side-nav">
+            <nav>
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="projects.html" class="nav-item">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">Projects</span>
+                </a>
+                <a href="meetings.html" class="nav-item active">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">Meetings</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <span class="nav-icon">🗓️</span>
+                    <span class="nav-text">Calendar</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="content-area">
+            <div class="page-header">
+                <h2>My Meetings</h2>
+                <button id="addMeetingBtn" class="primary-btn">+ Schedule Meeting</button>
+            </div>
+            
+            <div class="meetings-filters">
+                <div class="filter-group">
+                    <label>Filter by Status:</label>
+                    <select id="meetingStatusFilter">
+                        <option value="all">All Meetings</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="done">Done</option>
+                        <option value="canceled">Canceled</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Sort by:</label>
+                    <select id="meetingSort">
+                        <option value="nearest">Nearest First</option>
+                        <option value="farthest">Farthest First</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="meetings-table">
+                    <thead>
+                        <tr>
+                            <th>Meeting Name</th>
+                            <th>Date & Time</th>
+                            <th>Host</th>
+                            <th>My Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meetingsTableBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">Loading meetings...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <div id="meetingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Schedule Meeting</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <form id="meetingForm">
+                <input type="hidden" id="meetingId" name="meeting_id">
+                
+                <div class="form-group">
+                    <label for="meetingName">Meeting Name *</label>
+                    <input type="text" id="meetingName" name="meeting_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="meetingDateTime">Date & Time *</label>
+                    <input type="datetime-local" id="meetingDateTime" name="meeting_date_time" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="meetingHost">Meeting Host *</label>
+                    <input type="text" id="meetingHost" name="meeting_host" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentRole">Your Role *</label>
+                    <input type="text" id="studentRole" name="student_role" placeholder="e.g., Presenter, Observer, Participant" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="meetingStatus">Status</label>
+                    <select id="meetingStatus" name="status">
+                        <option value="scheduled">Scheduled</option>
+                        <option value="done">Done</option>
+                        <option value="canceled">Canceled</option>
+                    </select>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="save-btn">Save Meeting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 2rem; border: 3px solid black; box-shadow: 8px 8px 0px black; width: 450px; border-radius: 8px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Edit Your Profile</h2>
+                <span class="close-profile-modal" style="cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">First Name *</label>
+                    <input type="text" id="editFirstName" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Last Name *</label>
+                    <input type="text" id="editLastName" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Course *</label>
+                    <input type="text" id="editCourse" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">
+                </div>
+                <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="save-btn" style="flex: 1; padding: 10px; background: #b0f7b6; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">Save Changes</button>
+                    <button type="button" class="cancel-profile-btn" style="flex: 1; padding: 10px; background: #ffe0b5; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">Cancel</button>
+                </div>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 2px solid #ddd;">
+                
+                <div style="margin-top: 15px;">
+                    <button type="button" id="deleteAccountBtn" style="width: 100%; padding: 12px; background: #ff6b6b; color: white; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace; font-size: 14px;">🗑️ Delete Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete Account Confirmation Modal -->
+    <div id="deleteAccountModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 2rem; border: 3px solid black; box-shadow: 8px 8px 0px black; width: 500px; border-radius: 8px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #ff6b6b;">⚠️ Delete Account</h2>
+                <span class="close-delete-modal" style="cursor: pointer; font-size: 24px; font-weight: bold;">&times;</span>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 15px; border: 2px solid #ffc107; border-radius: 4px; margin-bottom: 20px;">
+                <p style="margin: 0; font-weight: bold; color: #d39e00;">⚠️ This action cannot be undone!</p>
+                <p style="margin: 10px 0 0 0; color: #666;">Your account and all associated projects, meetings, and tasks will be permanently deleted.</p>
+            </div>
+            
+            <form id="deleteAccountForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Enter your password to confirm *</label>
+                    <input type="password" id="deletePassword" required style="width: 100%; padding: 8px; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;" placeholder="Your password">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666; cursor: pointer;">
+                        <input type="checkbox" id="deleteConfirmCheckbox" style="width: 18px; height: 18px; cursor: pointer;"> I understand this will permanently delete my account and all my data
+                    </label>
+                </div>
+                
+                <div class="modal-actions" style="display: flex; gap: 10px;">
+                    <button type="submit" id="confirmDeleteBtn" disabled style="flex: 1; padding: 12px; background: #ff6b6b; color: white; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace; opacity: 0.5;">Delete Permanently</button>
+                    <button type="button" class="cancel-delete-btn" style="flex: 1; padding: 12px; background: #ffe0b5; font-weight: bold; cursor: pointer; border: 2px solid black; border-radius: 4px; font-family: 'Space Grotesk', monospace;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>
