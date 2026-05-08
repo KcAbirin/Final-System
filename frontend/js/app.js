@@ -164,546 +164,120 @@ function handleLogout() {
     // Redirect to login using replace()
     window.location.replace('index.html');
 }
-// ============================================
 
+// ============================================
 // LOGIN PAGE
-
 // ============================================
-
 function initLoginPage() {
-
     const loginForm = document.getElementById('loginForm');
-
     const signupLink = document.getElementById('signupLink');
-
     const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-
-   
-
+    
     if (loginForm) {
-
+        loginForm.reset();
         loginForm.addEventListener('submit', handleLogin);
-
         const savedStudentId = localStorage.getItem('rememberedStudentId');
+        const rememberCheckbox = document.getElementById('rememberMe');
 
         if (savedStudentId) {
-
             document.getElementById('studentId').value = savedStudentId;
-
-            const rememberCheckbox = document.getElementById('rememberMe');
-
             if (rememberCheckbox) rememberCheckbox.checked = true;
-
+        } else {
+            if (rememberCheckbox) rememberCheckbox.checked = false;
         }
-
     }
-
-   
-
+    
     if (signupLink) {
-
         signupLink.addEventListener('click', (e) => {
-
             e.preventDefault();
-
             openSignupModal();
-
         });
-
     }
-
-   
-
+    
     if (forgotPasswordLink) {
-
         forgotPasswordLink.addEventListener('click', (e) => {
-
             e.preventDefault();
-
             openForgotPasswordModal();
-
         });
-
     }
-
-   
-
+    
     const closeButtons = document.querySelectorAll('.close-modal');
-
     closeButtons.forEach(btn => {
-
         btn.addEventListener('click', () => {
-
             closeSignupModal();
-
             closeForgotPasswordModal();
-
         });
-
     });
-
-   
-
+    
     const cancelButtons = document.querySelectorAll('.cancel-btn');
-
     cancelButtons.forEach(btn => {
-
         btn.addEventListener('click', () => {
-
             closeSignupModal();
-
             closeForgotPasswordModal();
-
         });
-
     });
-
-   
-
+    
     const signupForm = document.getElementById('signupForm');
-
     if (signupForm) {
-
         signupForm.addEventListener('submit', handleSignup);
-
     }
-
-   
-
+    
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-
     if (forgotPasswordForm) {
-
         forgotPasswordForm.addEventListener('submit', handleForgotPassword);
-
     }
-
 }
-
-
 
 async function handleLogin(e) {
-
     e.preventDefault();
-
-   
-
+    
     const studentId = document.getElementById('studentId').value;
-
     const password = document.getElementById('password').value;
-
     const rememberMe = document.getElementById('rememberMe')?.checked || false;
-
-   
-
+    
     if (rememberMe) {
-
         localStorage.setItem('rememberedStudentId', studentId);
-
     } else {
-
         localStorage.removeItem('rememberedStudentId');
-
     }
-
-   
-
+    
     const loginBtn = document.querySelector('.login-btn');
-
     const originalText = loginBtn.textContent;
-
     loginBtn.textContent = 'Logging in...';
-
     loginBtn.disabled = true;
-
-   
-
+    
     try {
-
         const response = await fetch(`${API_URL}/auth/login`, {
-
             method: 'POST',
-
             headers: { 'Content-Type': 'application/json' },
-
             body: JSON.stringify({ student_id: studentId, password })
-
         });
-
-       
-
+        
         const data = await response.json();
-
-       
-
+        
         if (response.ok) {
-
             localStorage.setItem('authToken', data.token);
-
             localStorage.setItem('studentData', JSON.stringify(data.student));
-
             window.location.href = 'dashboard.html';
-
         } else {
-
             alert(data.message || 'Login failed');
-
         }
-
     } catch (error) {
-
         console.error('Login error:', error);
-
         alert('Error connecting to server');
-
     } finally {
-
         loginBtn.textContent = originalText;
-
         loginBtn.disabled = false;
-
     }
-
 }
-
-
 
 function openSignupModal() {
-
     const modal = document.getElementById('signupModal');
-
-    if (modal) modal.style.display = 'flex';
-
-}
-
-
-
-function closeSignupModal() {
-
-    const modal = document.getElementById('signupModal');
-
     if (modal) {
-
-        modal.style.display = 'none';
-
+        modal.style.display = 'flex';
         const form = document.getElementById('signupForm');
-
         if (form) form.reset();
-
     }
-
-}
-
-
-
-async function handleSignup(e) {
-
-    e.preventDefault();
-
-   
-
-    const studentId = document.getElementById('signupStudentId').value;
-
-    const firstName = document.getElementById('firstName').value;
-
-    const lastName = document.getElementById('lastName').value;
-
-    const email = document.getElementById('email').value;
-
-    const password = document.getElementById('signupPassword').value;
-
-    const confirmPassword = document.getElementById('confirmPassword').value;
-
-    const course = document.getElementById('course').value;
-
-   
-
-    if (password !== confirmPassword) {
-
-        alert('Passwords do not match');
-
-        return;
-
-    }
-
-   
-
-    if (password.length < 6) {
-
-        alert('Password must be at least 6 characters');
-
-        return;
-
-    }
-
-   
-
-    const signupBtn = document.querySelector('#signupModal .save-btn');
-
-    const originalText = signupBtn.textContent;
-
-    signupBtn.textContent = 'Creating...';
-
-    signupBtn.disabled = true;
-
-   
-
-    try {
-
-        const response = await fetch(`${API_URL}/auth/register`, {
-
-            method: 'POST',
-
-            headers: { 'Content-Type': 'application/json' },
-
-            body: JSON.stringify({
-
-                student_id: studentId,
-
-                first_name: firstName,
-
-                last_name: lastName,
-
-                email: email,
-
-                password: password,
-
-                course: course
-
-            })
-
-        });
-
-       
-
-        const data = await response.json();
-
-       
-
-        if (response.ok) {
-
-            alert('Account created! Please log in.');
-
-            closeSignupModal();
-
-            document.getElementById('studentId').value = studentId;
-
-        } else {
-
-            alert(data.message || 'Error creating account');
-
-        }
-
-    } catch (error) {
-
-        console.error('Signup error:', error);
-
-        alert('Error connecting to server');
-
-    } finally {
-
-        signupBtn.textContent = originalText;
-
-        signupBtn.disabled = false;
-
-    }
-
-}
-
-
-
-function openForgotPasswordModal() {
-
-    const modal = document.getElementById('forgotPasswordModal');
-
-    if (modal) modal.style.display = 'flex';
-
-}
-
-
-
-function closeForgotPasswordModal() {
-
-    const modal = document.getElementById('forgotPasswordModal');
-
-    if (modal) {
-
-        modal.style.display = 'none';
-
-        const form = document.getElementById('forgotPasswordForm');
-
-        if (form) form.reset();
-
-    }
-
-}
-
-
-
-async function handleForgotPassword(e) {
-
-    e.preventDefault();
-
-    const identifier = document.getElementById('resetIdentifier').value;
-
-   
-
-    const resetBtn = document.querySelector('#forgotPasswordModal .save-btn');
-
-    const originalText = resetBtn.textContent;
-
-    resetBtn.textContent = 'Sending...';
-
-    resetBtn.disabled = true;
-
-   
-
-    try {
-
-        const response = await fetch(`${API_URL}/auth/forgot-password`, {
-
-            method: 'POST',
-
-            headers: { 'Content-Type': 'application/json' },
-
-            body: JSON.stringify({ identifier })
-
-        });
-
-       
-
-        if (response.ok) {
-
-            alert('If an account exists, you will receive reset instructions.');
-
-            closeForgotPasswordModal();
-
-        } else {
-
-            alert('Error processing request');
-
-        }
-
-    } catch (error) {
-
-        console.error('Forgot password error:', error);
-
-        alert('Error connecting to server');
-
-    } finally {
-
-        resetBtn.textContent = originalText;
-
-        resetBtn.disabled = false;
-
-    }
-
-}
-// ============================================
-// LOGIN PAGE
-// ============================================
-function initLoginPage() {
-    const loginForm = document.getElementById('loginForm');
-    const signupLink = document.getElementById('signupLink');
-    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-    
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-        const savedStudentId = localStorage.getItem('rememberedStudentId');
-        if (savedStudentId) {
-            document.getElementById('studentId').value = savedStudentId;
-            const rememberCheckbox = document.getElementById('rememberMe');
-            if (rememberCheckbox) rememberCheckbox.checked = true;
-        }
-    }
-    
-    if (signupLink) {
-        signupLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            openSignupModal();
-        });
-    }
-    
-    if (forgotPasswordLink) {
-        forgotPasswordLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            openForgotPasswordModal();
-        });
-    }
-    
-    const closeButtons = document.querySelectorAll('.close-modal');
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            closeSignupModal();
-            closeForgotPasswordModal();
-        });
-    });
-    
-    const cancelButtons = document.querySelectorAll('.cancel-btn');
-    cancelButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            closeSignupModal();
-            closeForgotPasswordModal();
-        });
-    });
-    
-    const signupForm = document.getElementById('signupForm');
-    if (signupForm) {
-        signupForm.addEventListener('submit', handleSignup);
-    }
-    
-    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-    if (forgotPasswordForm) {
-        forgotPasswordForm.addEventListener('submit', handleForgotPassword);
-    }
-}
-
-async function handleLogin(e) {
-    e.preventDefault();
-    
-    const studentId = document.getElementById('studentId').value;
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('rememberMe')?.checked || false;
-    
-    if (rememberMe) {
-        localStorage.setItem('rememberedStudentId', studentId);
-    } else {
-        localStorage.removeItem('rememberedStudentId');
-    }
-    
-    const loginBtn = document.querySelector('.login-btn');
-    const originalText = loginBtn.textContent;
-    loginBtn.textContent = 'Logging in...';
-    loginBtn.disabled = true;
-    
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ student_id: studentId, password })
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('studentData', JSON.stringify(data.student));
-            window.location.href = 'dashboard.html';
-        } else {
-            alert(data.message || 'Login failed');
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('Error connecting to server');
-    } finally {
-        loginBtn.textContent = originalText;
-        loginBtn.disabled = false;
-    }
-}
-
-function openSignupModal() {
-    const modal = document.getElementById('signupModal');
-    if (modal) modal.style.display = 'flex';
 }
 
 function closeSignupModal() {
@@ -817,6 +391,7 @@ async function handleForgotPassword(e) {
         resetBtn.disabled = false;
     }
 }
+
 // ============================================
 // DASHBOARD PAGE
 // ============================================
@@ -1371,14 +946,13 @@ window.markTaskDone = async function(taskId) {
 
 // Start the engine!
 document.addEventListener('DOMContentLoaded', initDashboardPage);
+
 // ============================================
 // PROJECTS PAGE
 // ============================================
 
-// 1. ADDED: Declare the global variable so it doesn't crash
-
 function initProjectsPage() {
-    if (!checkAuth()) return; // Make sure checkAuth is defined in another file!
+    if (!checkAuth()) return;
     
     // --- Global Search ---
     const globalSearch = document.getElementById('globalSearch');
@@ -1387,7 +961,7 @@ function initProjectsPage() {
     }
     
     const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout); // Make sure handleLogout exists
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     
     const addBtn = document.getElementById('addProjectBtn');
     if (addBtn) addBtn.addEventListener('click', () => openProjectModal());
@@ -1471,7 +1045,8 @@ async function loadProjects() {
     try {
         const response = await fetchWithAuth('/projects');
         currentProjects = await response.json();
-        displayProjects(currentProjects);
+        populateTypeSelection(currentProjects);
+        filterProjects();
     } catch (error) {
         console.error('Error loading projects:', error);
         const tbody = document.getElementById('projectsTableBody');
@@ -1503,6 +1078,36 @@ function displayProjects(projects) {
             </td>
         </tr>
     `).join('');
+}
+
+function getUniqueProjectTypes(projects) {
+    return [...new Set(
+        projects
+            .map(p => (p.type_of_project || '').trim())
+            .filter(Boolean)
+    )].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+}
+
+function populateTypeSelection(projects) {
+    const typeFilter = document.getElementById('typeFilter');
+    const projectTypesList = document.getElementById('projectTypesList');
+    if (!typeFilter) return;
+
+    const previousValue = typeFilter.value || 'all';
+    const typeOptions = getUniqueProjectTypes(projects);
+
+    typeFilter.innerHTML = '<option value="all">All Types</option>' +
+        typeOptions.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
+
+    if (previousValue && [...typeFilter.options].some(opt => opt.value.toLowerCase() === previousValue.toLowerCase())) {
+        typeFilter.value = previousValue;
+    } else {
+        typeFilter.value = 'all';
+    }
+
+    if (projectTypesList) {
+        projectTypesList.innerHTML = typeOptions.map(type => `<option value="${escapeHtml(type)}">`).join('');
+    }
 }
 
 function filterProjects() {
@@ -2147,7 +1752,6 @@ function searchCalendar(query) {
         project.adviser?.toLowerCase().includes(searchTerm)
     );
     
-    // Show only calendar days with filtered projects
     const calendarGrid = document.getElementById('calendarGrid');
     if (!calendarGrid) return;
     
@@ -2494,10 +2098,10 @@ function displayNotifications(notifications) {
     `).join('');
 }
 
-// Initialize notifications - can be called on any page
+
 let notificationsInitialized = false;
 function initNotifications() {
-    if (notificationsInitialized) return; // Only initialize once
+    if (notificationsInitialized) return; 
     notificationsInitialized = true;
     
     const notificationsContainer = document.getElementById('notificationsContainer');
@@ -2505,7 +2109,6 @@ function initNotifications() {
     const notificationCloseBtn = document.querySelector('.notification-close');
     
     if (notificationsContainer && notificationDropdown) {
-        // Toggle dropdown on bell icon click
         notificationsContainer.addEventListener('click', (e) => {
             e.stopPropagation();
             notificationDropdown.classList.toggle('show');
@@ -2546,7 +2149,6 @@ function closeNotificationDropdown() {
 // ============================================
 
 async function showProjectOverviewModal() {
-    // Create modal HTML
     const modalHTML = `
         <div id="projectOverviewPopup" class="modal" style="display: flex;">
             <div class="modal-content overview-modal">

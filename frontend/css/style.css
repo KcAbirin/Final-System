@@ -745,6 +745,18 @@ body::before {
     font-size: 2rem;
 }
 
+.stat-number-rect {
+    background: #c7f9cc;
+    border: 3px solid #000000;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    min-width: 3rem;
+    box-shadow: 3px 3px 0px 0px #000000;
+}
+
 .stat-number {
     font-size: 3rem;
     font-weight: 800;
